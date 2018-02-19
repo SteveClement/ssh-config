@@ -46,7 +46,7 @@ class SshConfig:
         self.__entries = {}
         if not default is None:
             self.set(None, default)
-        for h, e in hosts.items():
+        for h, e in list(hosts.items()):
             if not e is None:
                 self.set(h, e)
 
@@ -149,7 +149,7 @@ class SshConfig:
 
     def hosts(self):
         """ Return all the hostnames """
-        return [x.partition("ssh_")[2] for x in self.__entries.keys() if
+        return [x.partition("ssh_")[2] for x in list(self.__entries.keys()) if
                 x.find("ssh_", 0, 4) >= 0]
 
     def save(self, dest):
@@ -186,7 +186,7 @@ class SshConfig:
         """
         rep = "SshConfig("
         entries = []
-        for k, v in self.__entries.items():
+        for k, v in list(self.__entries.items()):
             if v is None:
                 continue
             if k == "default":
@@ -201,7 +201,7 @@ class SshConfig:
         """ Gives the ssh_config represenation of the entry. """
         lines = []
         sortfunc = lambda t: t[1].priority()
-        for h, e in sorted(self.__entries.items(), key=sortfunc):
+        for h, e in sorted(list(self.__entries.items()), key=sortfunc):
             opts = str(e)
             if not h == "default":
                 lines.append("Host %s" % h.partition("ssh_")[2])
@@ -224,7 +224,7 @@ class SshConfigEntry:
                 if not (t[1] is None or t[0] is None):
                     self.__options[str(t[0])] = t[1]
         if ddict is not None and len(ddict) > 0:
-            for o, v in ddict.items():
+            for o, v in list(ddict.items()):
                 if not (o is None or v is None):
                     self.__options[o] = v
         if ttuple is not None and len(ttuple) >= 2:
@@ -245,7 +245,7 @@ class SshConfigEntry:
 
         if not entry is None:
             if isinstance(entry, SshConfigEntry):
-                    opts = entry.items()
+                    opts = list(entry.items())
                     self.__add_to_opts(ddict=opts)
             elif isinstance(entry, dict):
                 self.__add_to_opts(ddict=entry)
@@ -357,12 +357,12 @@ class SshConfigEntry:
 
     def items(self):
         """ Return the options that have a value. """
-        return [x for x in self.__options.items() if not x[1] is None]
+        return [x for x in list(self.__options.items()) if not x[1] is None]
 
     def options(self):
         """ Return all option names. """
         l = []
-        l.extend([str(x[0]) for x in self.items()])
+        l.extend([str(x[0]) for x in list(self.items())])
         return l
 
     def __repr__(self):
@@ -370,7 +370,7 @@ class SshConfigEntry:
         SshConfigEntry(priority, optionN=valueN, ...). """
         rep = "SshConfigEntry(%d" % self.priority()
         entries = []
-        for k, v in self.__options.items():
+        for k, v in list(self.__options.items()):
             if v is None:
                 continue
             entries.append("%s = \"%s\"" % (k, v))
@@ -383,7 +383,7 @@ class SshConfigEntry:
     def __str__(self):
         """ String representation resulting in ssh_config-like formatting. """
         lines = []
-        for k, v in self.__options.items():
+        for k, v in list(self.__options.items()):
             if v is None:
                 continue
             lines.append("%s %s" % (k, v))
